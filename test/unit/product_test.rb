@@ -1,9 +1,18 @@
 require 'test_helper'
 
 class ProductTest < ActiveSupport::TestCase
+  fixtures :products
   
   def new_product(image_url)
     Product.new(title: "My Book Title", description: "yyy", price: 1, image_url: image_url)
+  end
+  
+  test "product title length must be greater than 10" do
+    product = products(:ruby)
+    assert product.valid?
+    product.title = "foo"
+    assert product.invalid?
+    assert_equal ["meine eigene Fehlermeldung"], product.errors[:title]
   end
   
   test "product attributes must not be empty" do
@@ -16,7 +25,7 @@ class ProductTest < ActiveSupport::TestCase
   end
   
   test "product price must be positive" do
-    product = Product.new(title: "My Book Title", description: "yyy", image_url: "zzz.jpg")
+    product = products(:ruby)
     product.price = -1
     assert product.invalid?
     assert_equal ["must be greater than or equal to 0.01"], product.errors[:price]
